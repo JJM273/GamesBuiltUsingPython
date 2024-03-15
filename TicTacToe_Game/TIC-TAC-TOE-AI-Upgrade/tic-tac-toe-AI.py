@@ -43,10 +43,11 @@ def play():
     return input("\nAre you ready to play the game? Enter [Y]es or [N]o.\t").upper().startswith('Y')
 
 
-def get_names():
+def get_names(p2: str = None):
     """Player names input"""
     p1 = input("\nEnter NAME of PLAYER 1:\t").capitalize()
-    p2 = input("Enter NAME of PLAYER 2:\t").capitalize()
+    if p2 is None:
+        p2 = input("Enter NAME of PLAYER 2:\t").capitalize()
     return (p1, p2)
 
 
@@ -203,6 +204,28 @@ def choose_starting_player(p1, p2):
         starting_player = p1
     return starting_player
 
+def win_screen(name: str = None):
+    """output the win screen"""
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    if name is not None:
+        print(f'\n\nCONGRATULATIONS {name}! YOU HAVE WON THE GAME!\n\n')
+    else:
+        print('\n\nTHE Computer HAS WON THE GAME!\n\n')
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+def tie_screen():
+    """display DRAW screen"""
+    print("~~~~~~~~~~~~~~~~~~")
+    print('\nThe game is a DRAW!\n')
+    print("~~~~~~~~~~~~~~~~~~")
+
+def get_mode():
+    """1 or 2 player game"""
+    print("\n0. 1-player game with the computer.")
+    print("1. 2-player game.")
+    mode = int(input("\nSelect an option [0] or [1]: "))
+    return mode
+
 if __name__ == "__main__":
     #MAIN PROGRAM STARTS;
 
@@ -225,22 +248,16 @@ if __name__ == "__main__":
 
 
 
-        print("\n0. 1-player game with the computer.")
-        print("1. 2-player game.")
-        mode = int(input("\nSelect an option [0] or [1]: "))
+        mode = get_mode()
         if mode:
-            #Asking Names
             p1_name, p2_name = get_names()
-
         else:
-            p1_name = input("\nEnter NAME of PLAYER who will go against the Computer:\t").capitalize()
-            p2_name = "Computer"
+            p1_name, p2_name = get_names("Computer")
 
         # Asking Choices; Printing choices; X or O;
         p1_choice, p2_choice = get_mark_choice()
         print(f"\n{p1_name}:", p1_choice)
         print(f"{p2_name}:", p2_choice)
-
 
         #Printing randomly who will go first;
         turn = choose_starting_player(p1_name, p2_name)
@@ -250,48 +267,37 @@ if __name__ == "__main__":
         #Asking the user, if ready to play the game; Output will be True or False;
         play_game = play()
 
+        display_board(the_board, available)
         while play_game:
 
-            ############################
             #PLAYER1
             if turn == p1_name:
 
-                #Displaying the board;
-                display_board(the_board, available)
 
                 #Position of the input;
                 position = player_choice(the_board, p1_name, p1_choice)
 
                 #Replacing the ' ' at *position* to *p1_choice* in *theBoard* list
                 place_marker(the_board, available, p1_choice, position)
+                display_board(the_board, available)
 
                 #To check if Player 1 has won after the current input;
                 if win_check(the_board, p1_choice):
-                    display_board(the_board, available)
-                    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                    print(f'\n\nCONGRATULATIONS {p1_name}! YOU HAVE WON THE GAME!\n\n')
-                    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                    win_screen(p1_name)
                     play_game = False
 
                 else:
                     #To check if the board is full; if yes, the game is a draw;
                     if full_board_check(the_board):
-                        display_board(the_board, available)
-                        print("~~~~~~~~~~~~~~~~~~")
-                        print('\nThe game is a DRAW!\n')
-                        print("~~~~~~~~~~~~~~~~~~")
+                        tie_screen()
                         break
                     #If none of the above is possible, next turn of Player 2
-                    else:
-                        turn = p2_name
+                    turn = p2_name
 
 
-            ############################
             #PLAYER2
             elif turn == p2_name:
 
-                #Displaying the board;
-                display_board(the_board, available)
 
                 #Position of the input;
                 if mode:
@@ -302,27 +308,22 @@ if __name__ == "__main__":
 
                 #Replacing the ' ' at *position* to *p2_choice* in *theBoard* list
                 place_marker(the_board, available, p2_choice, position)
+                display_board(the_board, available)
 
                 #To check if Player 2 has won after the current input;
                 if win_check(the_board, p2_choice):
-                    display_board(the_board, available)
-                    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
                     if mode:
-                        print(f'\n\nCONGRATULATIONS {p2_name}! YOU HAVE WON THE GAME!\n\n')
+                        win_screen(p2_name)
                     else:
-                        print('\n\nTHE Computer HAS WON THE GAME!\n\n')
-                    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                        win_screen()
                     play_game = False
 
                 else:
                     #To check if the board is full; if yes, the game is a draw;
                     if full_board_check(the_board):
-                        display_board(the_board, available)
-                        print("~~~~~~~~~~~~~~~~~~")
-                        print('\nThe game is a DRAW!\n')
-                        print("~~~~~~~~~~~~~~~~~~")
+                        tie_screen()
                         break
-                    #If none of the above is possible, next turn of Player 2
+                    #If none of the above is possible, next turn of Player 1
                     else:
                         turn = p1_name
 
